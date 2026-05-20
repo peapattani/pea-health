@@ -1976,19 +1976,23 @@ function renderDashboard() {
   </div>
 
   <!-- AI BOX -->
-  ${d.ai_summary ? `
+  ${(() => {
+    const isErrSum = d.ai_summary && (d.ai_summary === 'ไม่สามารถประเมินได้' || d.ai_summary.length < 30);
+    if (d.ai_summary && !isErrSum) return `
   <div class="ai-box">
     <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น ปี ${selectedYear}</span>
       <span style="margin-left:auto;padding:5px 12px;font-size:11px;background:rgba(255,255,255,.15);border-radius:20px;color:rgba(255,255,255,.75);">✅ ประเมินแล้ว</span>
     </div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
     <div class="ai-text">${d.ai_summary.replace(/\n/g,'<br>')}</div>
-  </div>` : `
+  </div>`;
+    return `
   <div class="ai-box">
-    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span><button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">ประเมินเลย</button></div>
+    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span><button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">${isErrSum ? '🔄 ลองใหม่' : 'ประเมินเลย'}</button></div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
-    <div class="ai-text" id="ai-result-text" style="opacity:.65;">กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ</div>
-  </div>`}
+    <div class="ai-text" id="ai-result-text" style="opacity:${isErrSum?1:.65};${isErrSum?'color:#FCA5A5;':''}">${isErrSum ? '❌ ' + d.ai_summary + ' — กดปุ่มลองใหม่ได้เลย' : 'กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ'}</div>
+  </div>`;
+  })()}
   `;
 
   // Draw charts after DOM ready
@@ -2244,7 +2248,8 @@ async function runAI() {
   const aiKey = localStorage.getItem('ai_key') || await getAIKey();
   const d = annualData.find(r => r.checkup_year === selectedYear) || annualData[0];
   if (!d) return;
-  if (d.ai_summary) { showNotif('🔒 ประเมินแล้วสำหรับปี ' + selectedYear + ' (ประเมินได้1 ครั้งต่อปีเทานั้น)', 'error'); return; }
+  const isErrorSummary = d.ai_summary && (d.ai_summary === 'ไม่สามารถประเมินได้' || d.ai_summary.length < 30);
+  if (d.ai_summary && !isErrorSummary) { showNotif('🔒 ประเมินแล้วสำหรับปี ' + selectedYear + ' (ประเมินได้1 ครั้งต่อปีเทานั้น)', 'error'); return; }
   const textEl = document.getElementById('ai-result-text');
   if (textEl) textEl.innerHTML = '<span class="spinner"></span> AI กำลังประเมินสุขภาพเบื้องต้น...';
 
@@ -2299,7 +2304,9 @@ async function runAI() {
       body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:4000, messages:[{role:'user',content:prompt}] })
     });
     const json = await res.json();
-    const summary = json.content?.[0]?.text || 'ไม่สามารถประเมินได้';
+    if (json.error) throw new Error(json.error.message || 'API Error');
+    const summary = json.content?.[0]?.text || '';
+    if (!summary || summary.length < 30) throw new Error('AI ตอบกลับไม่สมบูรณ์ กรุณาลองใหม่อีกครั้ง');
     const score = calcScore(d);
     await sb.from('annual_checkup').update({ ai_summary: summary, ai_score: score }).eq('id', d.id);
     const idx = annualData.findIndex(r => r.checkup_year === d.checkup_year);
