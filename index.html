@@ -761,7 +761,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
             <div class="fg"><label class="fl">Triglyceride (mg/dL) <span style="color:#DC2626;">*</span></label><input class="fi" type="number" step="0.1" id="f-tg" placeholder="เช่น 140"></div>
           </div>
 
-          <!-- hidden fields ที่ยังใช้ใน saveAnnual -->
+          <!-- hidden fields สำหรับ Tier 2 (ยังต้องใช้) -->
           <input type="hidden" id="f-pulse">
           <input type="hidden" id="f-hdl">
           <input type="hidden" id="f-hb">
@@ -776,16 +776,52 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
           <input type="hidden" id="f-cr">
           <input type="hidden" id="f-bun">
           <input type="hidden" id="f-ua">
-          <input type="hidden" id="f-urine">
           <input type="hidden" id="f-urine-note">
-          <input type="hidden" id="f-ekg">
-          <input type="hidden" id="f-xray">
           <input type="hidden" id="f-xray-note">
-          <input type="hidden" id="f-vr">
-          <input type="hidden" id="f-vl">
+
+          <div class="sec-title" style="margin-top:4px;">🩺 การตรวจอื่นๆ <span style="font-size:11px;font-weight:400;color:#6B7280;">(ตรวจทุกคนทุกปี)</span></div>
+          <div class="grid-form">
+            <div class="fg"><label class="fl">ปัสสาวะ <span style="color:#DC2626;">*</span></label>
+              <select class="fi" id="f-urine" required>
+                <option value="">— เลือก —</option>
+                <option>ปกติ</option>
+                <option>พบน้ำตาล (Glycosuria)</option>
+                <option>พบโปรตีน (Proteinuria)</option>
+                <option>พบเม็ดเลือดแดง</option>
+                <option>ผิดปกติ</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">EKG <span style="color:#DC2626;">*</span></label>
+              <select class="fi" id="f-ekg" required>
+                <option value="">— เลือก —</option>
+                <option>ปกติ (Normal Sinus Rhythm)</option>
+                <option>Sinus Tachycardia</option>
+                <option>Sinus Bradycardia</option>
+                <option>ST Depression</option>
+                <option>LVH</option>
+                <option>ผิดปกติ — ส่งต่อแพทย์</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">X-Ray ปอด <span style="color:#DC2626;">*</span></label>
+              <select class="fi" id="f-xray" required>
+                <option value="">— เลือก —</option>
+                <option>ปกติ (Normal)</option>
+                <option>พบฝุ่นปอด (Pneumoconiosis)</option>
+                <option>พบเงาผิดปกติ — ติดตาม</option>
+                <option>สงสัยวัณโรค — ส่งต่อ</option>
+                <option>ผิดปกติอื่นๆ</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">ตาขวา (VA) <span style="color:#DC2626;">*</span></label>
+              <input class="fi" type="text" id="f-vr" placeholder="เช่น 20/20" autocomplete="off">
+            </div>
+            <div class="fg"><label class="fl">ตาซ้าย (VA) <span style="color:#DC2626;">*</span></label>
+              <input class="fi" type="text" id="f-vl" placeholder="เช่น 20/20" autocomplete="off">
+            </div>
+          </div>
 
           <div class="btn-row" style="margin-top:20px;">
-            <button class="btn-primary" onclick="saveAnnual()" id="btn-save-annual">💾 บันทึกข้อมูลหลัก</button>
+            <button class="btn-primary" onclick="saveAnnual()" id="btn-save-annual">💾 บันทึกข้อมูลครบถ้วน</button>
             <button class="btn-sec" onclick="clearAnnualForm()">ล้างข้อมูล</button>
           </div>
         </div>
@@ -856,28 +892,8 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
                   <div class="fg"><label class="fl">BUN (mg/dL)</label><input class="fi" type="number" step="0.1" id="f-bun-t2" oninput="document.getElementById('f-bun').value=this.value"></div>
                   <div class="fg"><label class="fl">Uric Acid (mg/dL)</label><input class="fi" type="number" step="0.1" id="f-ua-t2" oninput="document.getElementById('f-ua').value=this.value"></div>
                 </div>
-                <div class="sec-title" style="margin-top:12px;">การตรวจอื่นๆ</div>
-                <div class="grid-form">
-                  <div class="fg"><label class="fl">ปัสสาวะ</label>
-                    <select class="fi" id="f-urine-t2" onchange="document.getElementById('f-urine').value=this.value">
-                      <option value="">— เลือก —</option><option>ปกติ</option><option>พบน้ำตาล (Glycosuria)</option><option>พบโปรตีน (Proteinuria)</option><option>พบเม็ดเลือดแดง</option><option>ผิดปกติ</option>
-                    </select>
-                  </div>
-                  <div class="fg"><label class="fl">EKG</label>
-                    <select class="fi" id="f-ekg-t2" onchange="document.getElementById('f-ekg').value=this.value">
-                      <option value="">— เลือก —</option><option>ปกติ (Normal Sinus Rhythm)</option><option>Sinus Tachycardia</option><option>Sinus Bradycardia</option><option>ST Depression</option><option>LVH</option><option>ผิดปกติ — ส่งต่อแพทย์</option>
-                    </select>
-                  </div>
-                  <div class="fg"><label class="fl">X-Ray ปอด</label>
-                    <select class="fi" id="f-xray-t2" onchange="document.getElementById('f-xray').value=this.value">
-                      <option value="">— เลือก —</option><option>ปกติ (Normal)</option><option>พบฝุ่นปอด (Pneumoconiosis)</option><option>พบเงาผิดปกติ — ติดตาม</option><option>สงสัยวัณโรค — ส่งต่อ</option><option>ผิดปกติอื่นๆ</option>
-                    </select>
-                  </div>
-                  <div class="fg"><label class="fl">ตาขวา (VA)</label><input class="fi" type="text" id="f-vr-t2" placeholder="20/20" oninput="document.getElementById('f-vr').value=this.value"></div>
-                  <div class="fg"><label class="fl">ตาซ้าย (VA)</label><input class="fi" type="text" id="f-vl-t2" placeholder="20/20" oninput="document.getElementById('f-vl').value=this.value"></div>
-                </div>
-                <div class="btn-row" style="margin-top:16px;">
-                  <button class="btn-primary" onclick="saveAnnual()" style="background:#7C3AED;">💾 บันทึกข้อมูลครบถ้วน</button>
+                <div style="margin-top:12px;padding:10px 14px;background:#F0FDF4;border-radius:8px;border:1px solid #BBF7D0;font-size:12px;color:#166534;">
+                  ✅ ปัสสาวะ / EKG / X-Ray / สายตา — กรอกในส่วน <strong>ข้อมูลหลัก ด้านบน</strong> แล้ว
                 </div>
               </div>
             </details>
@@ -1976,25 +1992,19 @@ function renderDashboard() {
   </div>
 
   <!-- AI BOX -->
-  ${(() => {
-    const isErrSum = d.ai_summary && (d.ai_summary === 'ไม่สามารถประเมินได้' || d.ai_summary.length < 30);
-    if (d.ai_summary && !isErrSum) return `
+  ${d.ai_summary ? `
   <div class="ai-box">
     <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น ปี ${selectedYear}</span>
       <span style="margin-left:auto;padding:5px 12px;font-size:11px;background:rgba(255,255,255,.15);border-radius:20px;color:rgba(255,255,255,.75);">✅ ประเมินแล้ว</span>
     </div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
     <div class="ai-text">${d.ai_summary.replace(/\n/g,'<br>')}</div>
-  </div>`;
-    return `
+  </div>` : `
   <div class="ai-box">
-    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span>
-      <button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">${isErrSum ? '🔄 ลองใหม่' : 'ประเมินเลย'}</button>
-    </div>
+    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span><button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">ประเมินเลย</button></div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
-    <div class="ai-text" id="ai-result-text" style="opacity:${isErrSum?1:.65};">${isErrSum ? '<span style="color:#FCA5A5;">❌ ประเมินครั้งก่อนไม่สำเร็จ — กดปุ่มลองใหม่ได้เลย</span>' : 'กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ'}</div>
-  </div>`;
-  })()}
+    <div class="ai-text" id="ai-result-text" style="opacity:.65;">กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ</div>
+  </div>`}
   `;
 
   // Draw charts after DOM ready
@@ -2240,23 +2250,17 @@ async function loadAIPage() {
 }
 
 async function getAIKey() {
-  // ลอง localStorage ก่อน (เร็วกว่า)
-  const cached = localStorage.getItem('ai_key');
-  if (cached) return cached;
-  // ดึงจาก Supabase system_settings
   try {
-    const { data, error } = await sb.from('system_settings').select('value').eq('key','ai_key').single();
-    if (error) { console.warn('[getAIKey] Supabase error:', error.message, '— อาจต้องเพิ่ม RLS policy: USING (key = \'ai_key\')'); return null; }
+    const { data } = await sb.from('system_settings').select('value').eq('key','ai_key').single();
     if (data?.value) { localStorage.setItem('ai_key', data.value); return data.value; }
-  } catch(e) { console.warn('[getAIKey] exception:', e.message); }
+  } catch(e) {}
   return null;
-}
+}  
 async function runAI() {
-  const aiKey = await getAIKey();
+  const aiKey = localStorage.getItem('ai_key') || await getAIKey();
   const d = annualData.find(r => r.checkup_year === selectedYear) || annualData[0];
   if (!d) return;
-  const isErrSummary = d.ai_summary && (d.ai_summary === 'ไม่สามารถประเมินได้' || d.ai_summary.length < 30);
-  if (d.ai_summary && !isErrSummary) { showNotif('🔒 ประเมินแล้วสำหรับปี ' + selectedYear + ' (ประเมินได้1 ครั้งต่อปีเทานั้น)', 'error'); return; }
+  if (d.ai_summary) { showNotif('🔒 ประเมินแล้วสำหรับปี ' + selectedYear + ' (ประเมินได้1 ครั้งต่อปีเทานั้น)', 'error'); return; }
   const textEl = document.getElementById('ai-result-text');
   if (textEl) textEl.innerHTML = '<span class="spinner"></span> AI กำลังประเมินสุขภาพเบื้องต้น...';
 
@@ -2304,19 +2308,14 @@ async function runAI() {
 แนะนำข้อมูลการรักษาที่จำเป็นและหมอมักไม่ได้บอก ควรตรวจซ้ำเมื่อไหร่ และตรวจอะไรเพิ่ม`;
 
   try {
-    if (!aiKey) {
-      if (textEl) textEl.innerHTML = '<div style="color:#FCA5A5;font-size:13px;line-height:1.8;">❌ <strong>ไม่พบ API Key</strong><br>ระบบยังโหลด Key จาก Supabase ไม่ได้<br><br>📋 <strong>วิธีแก้ (Admin):</strong><br>ไปที่ Supabase Dashboard → SQL Editor แล้วรัน:<br><code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;font-size:11px;">CREATE POLICY \"allow_read_ai_key\" ON system_settings FOR SELECT USING (key = \'ai_key\');</code><br><br>จากนั้นไปที่ เมนูตั้งค่า → ใส่ AI Key แล้วบันทึกใหม่</div>';
-      return;
-    }
+    if (!aiKey) throw new Error('ไม่พบ API Key กรุณาติดต่อผู้ดูแลระบบ');
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'x-api-key':aiKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
       body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:4000, messages:[{role:'user',content:prompt}] })
     });
     const json = await res.json();
-    if (json.error) throw new Error(json.error.message || 'API Error');
-    const summary = json.content?.[0]?.text || '';
-    if (!summary || summary.length < 30) throw new Error('AI ตอบกลับไม่สมบูรณ์ กรุณาลองใหม่อีกครั้ง');
+    const summary = json.content?.[0]?.text || 'ไม่สามารถประเมินได้';
     const score = calcScore(d);
     await sb.from('annual_checkup').update({ ai_summary: summary, ai_score: score }).eq('id', d.id);
     const idx = annualData.findIndex(r => r.checkup_year === d.checkup_year);
@@ -2478,6 +2477,37 @@ function renderNCDBox(d) {
 
 // ===== SAVE ANNUAL =====
 async function saveAnnual() {
+  // ===== Validate บังคับ =====
+  const required = [
+    { id:'f-weight',  label:'น้ำหนัก' },
+    { id:'f-height',  label:'ส่วนสูง' },
+    { id:'f-waist',   label:'รอบเอว' },
+    { id:'f-bps',     label:'ความดันตัวบน' },
+    { id:'f-bpd',     label:'ความดันตัวล่าง' },
+    { id:'f-fbs',     label:'น้ำตาล (FBS)' },
+    { id:'f-chol',    label:'Total Cholesterol' },
+    { id:'f-ldl',     label:'LDL' },
+    { id:'f-tg',      label:'Triglyceride' },
+    { id:'f-urine',   label:'ปัสสาวะ' },
+    { id:'f-ekg',     label:'EKG' },
+    { id:'f-xray',    label:'X-Ray ปอด' },
+    { id:'f-vr',      label:'สายตาขวา (VA)' },
+    { id:'f-vl',      label:'สายตาซ้าย (VA)' },
+  ];
+  const missing = required.filter(r => { const el = document.getElementById(r.id); return !el || !el.value || el.value.trim() === ''; });
+  if (missing.length) {
+    // highlight fields ที่ขาด
+    required.forEach(r => { const el = document.getElementById(r.id); if (el) el.style.borderColor = ''; });
+    missing.forEach(r => { const el = document.getElementById(r.id); if (el) { el.style.borderColor = '#DC2626'; el.style.borderWidth = '2px'; } });
+    // scroll ไปหา field แรกที่ขาด
+    const firstEl = document.getElementById(missing[0].id);
+    if (firstEl) firstEl.scrollIntoView({ behavior:'smooth', block:'center' });
+    showNotif('❗ กรุณากรอกข้อมูลให้ครบ: ' + missing.map(r => r.label).join(', '), 'error');
+    return;
+  }
+  // เคลียร์ border สีแดง
+  required.forEach(r => { const el = document.getElementById(r.id); if (el) el.style.borderColor = ''; });
+
   const btn = document.getElementById('btn-save-annual');
   btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
   const w = parseFloat(document.getElementById('f-weight').value);
@@ -2539,9 +2569,10 @@ async function saveAnnual() {
 
 function clearAnnualForm() {
   document.querySelectorAll('#page-enter-annual .fi').forEach(el => {
-    if (el.tagName === 'SELECT') { /* ไม่ reset select */ }
+    if (el.tagName === 'SELECT') { el.value = ''; } // reset select ด้วย รวม f-urine, f-ekg, f-xray
     else { el.value = ''; }
     el.disabled = false;
+    el.style.borderColor = ''; // เคลียร์ border error
   });
   document.querySelectorAll('#page-enter-annual input[type=checkbox]').forEach(el => el.checked = false);
   // reset วันที่เป็นวันนี้
