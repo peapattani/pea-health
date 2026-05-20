@@ -779,7 +779,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
           <input type="hidden" id="f-urine-note">
           <input type="hidden" id="f-xray-note">
 
-          <div class="sec-title" style="margin-top:4px;">🩺 การตรวจอื่นๆ </div>
+          <div class="sec-title" style="margin-top:4px;">🩺 การตรวจอื่นๆ</div>
           <div class="grid-form">
             <div class="fg"><label class="fl">ปัสสาวะ <span style="color:#DC2626;">*</span></label>
               <select class="fi" id="f-urine" required>
@@ -812,10 +812,10 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
                 <option>ผิดปกติอื่นๆ</option>
               </select>
             </div>
-            <div class="fg"><label class="fl">ตาขวา (VA) <span style="color:#DC2626;">*</span></label>
+            <div class="fg"><label class="fl">ตาขวา (VA)</label>
               <input class="fi" type="text" id="f-vr" placeholder="เช่น 20/20" autocomplete="off">
             </div>
-            <div class="fg"><label class="fl">ตาซ้าย (VA) <span style="color:#DC2626;">*</span></label>
+            <div class="fg"><label class="fl">ตาซ้าย (VA)</label>
               <input class="fi" type="text" id="f-vl" placeholder="เช่น 20/20" autocomplete="off">
             </div>
           </div>
@@ -2491,8 +2491,6 @@ async function saveAnnual() {
     { id:'f-urine',   label:'ปัสสาวะ' },
     { id:'f-ekg',     label:'EKG' },
     { id:'f-xray',    label:'X-Ray ปอด' },
-    { id:'f-vr',      label:'สายตาขวา (VA)' },
-    { id:'f-vl',      label:'สายตาซ้าย (VA)' },
   ];
   const missing = required.filter(r => { const el = document.getElementById(r.id); return !el || !el.value || el.value.trim() === ''; });
   if (missing.length) {
