@@ -1988,9 +1988,11 @@ function renderDashboard() {
   </div>`;
     return `
   <div class="ai-box">
-    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span><button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">${isErrSum ? '🔄 ลองใหม่' : 'ประเมินเลย'}</button></div>
+    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span>
+      <button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">${isErrSum ? '🔄 ลองใหม่' : 'ประเมินเลย'}</button>
+    </div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
-    <div class="ai-text" id="ai-result-text" style="opacity:${isErrSum?1:.65};${isErrSum?'color:#FCA5A5;':''}">${isErrSum ? '❌ ' + d.ai_summary + ' — กดปุ่มลองใหม่ได้เลย' : 'กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ'}</div>
+    <div class="ai-text" id="ai-result-text" style="opacity:${isErrSum?1:.65};">${isErrSum ? '<span style="color:#FCA5A5;">❌ ประเมินครั้งก่อนไม่สำเร็จ — กดปุ่มลองใหม่ได้เลย</span>' : 'กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ'}</div>
   </div>`;
   })()}
   `;
@@ -2238,18 +2240,23 @@ async function loadAIPage() {
 }
 
 async function getAIKey() {
+  // ลอง localStorage ก่อน (เร็วกว่า)
+  const cached = localStorage.getItem('ai_key');
+  if (cached) return cached;
+  // ดึงจาก Supabase system_settings
   try {
-    const { data } = await sb.from('system_settings').select('value').eq('key','ai_key').single();
+    const { data, error } = await sb.from('system_settings').select('value').eq('key','ai_key').single();
+    if (error) { console.warn('[getAIKey] Supabase error:', error.message, '— อาจต้องเพิ่ม RLS policy: USING (key = \'ai_key\')'); return null; }
     if (data?.value) { localStorage.setItem('ai_key', data.value); return data.value; }
-  } catch(e) {}
+  } catch(e) { console.warn('[getAIKey] exception:', e.message); }
   return null;
-}  
+}
 async function runAI() {
-  const aiKey = localStorage.getItem('ai_key') || await getAIKey();
+  const aiKey = await getAIKey();
   const d = annualData.find(r => r.checkup_year === selectedYear) || annualData[0];
   if (!d) return;
-  const isErrorSummary = d.ai_summary && (d.ai_summary === 'ไม่สามารถประเมินได้' || d.ai_summary.length < 30);
-  if (d.ai_summary && !isErrorSummary) { showNotif('🔒 ประเมินแล้วสำหรับปี ' + selectedYear + ' (ประเมินได้1 ครั้งต่อปีเทานั้น)', 'error'); return; }
+  const isErrSummary = d.ai_summary && (d.ai_summary === 'ไม่สามารถประเมินได้' || d.ai_summary.length < 30);
+  if (d.ai_summary && !isErrSummary) { showNotif('🔒 ประเมินแล้วสำหรับปี ' + selectedYear + ' (ประเมินได้1 ครั้งต่อปีเทานั้น)', 'error'); return; }
   const textEl = document.getElementById('ai-result-text');
   if (textEl) textEl.innerHTML = '<span class="spinner"></span> AI กำลังประเมินสุขภาพเบื้องต้น...';
 
@@ -2297,7 +2304,10 @@ async function runAI() {
 แนะนำข้อมูลการรักษาที่จำเป็นและหมอมักไม่ได้บอก ควรตรวจซ้ำเมื่อไหร่ และตรวจอะไรเพิ่ม`;
 
   try {
-    if (!aiKey) throw new Error('ไม่พบ API Key กรุณาติดต่อผู้ดูแลระบบ');
+    if (!aiKey) {
+      if (textEl) textEl.innerHTML = '<div style="color:#FCA5A5;font-size:13px;line-height:1.8;">❌ <strong>ไม่พบ API Key</strong><br>ระบบยังโหลด Key จาก Supabase ไม่ได้<br><br>📋 <strong>วิธีแก้ (Admin):</strong><br>ไปที่ Supabase Dashboard → SQL Editor แล้วรัน:<br><code style="background:rgba(0,0,0,.3);padding:2px 6px;border-radius:4px;font-size:11px;">CREATE POLICY \"allow_read_ai_key\" ON system_settings FOR SELECT USING (key = \'ai_key\');</code><br><br>จากนั้นไปที่ เมนูตั้งค่า → ใส่ AI Key แล้วบันทึกใหม่</div>';
+      return;
+    }
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'x-api-key':aiKey, 'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
