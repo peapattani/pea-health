@@ -1999,7 +1999,7 @@ function renderDashboard() {
     </div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
     <div class="ai-text">${d.ai_summary.replace(/\n/g,'<br>')}</div>
-  </div>` : `
+  </div>` : d.weight ? `
   <div class="ai-box">
     <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span></div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:12px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
@@ -2011,7 +2011,7 @@ function renderDashboard() {
       <button class="btn-gold" style="padding:8px 20px;font-size:13px;" onclick="runAI()">🤖 ประเมินเลย</button>
     </div>
     <div class="ai-text" id="ai-result-text" style="opacity:.65;margin-top:12px;">กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ</div>
-  </div>`}
+  </div>` : ''}
   `;
 
   // Draw charts after DOM ready
