@@ -1991,7 +1991,7 @@ function renderDashboard() {
     </table>
   </div>
 
-  <!-- AI BOX -->
+  <!-- AI BOX: แสดงเฉพาะผล AI ที่วิเคราะห์แล้ว + ลิงก์ไปหน้า AI ประเมิน -->
   ${d.ai_summary ? `
   <div class="ai-box">
     <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น ปี ${selectedYear}</span>
@@ -2000,17 +2000,11 @@ function renderDashboard() {
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
     <div class="ai-text">${d.ai_summary.replace(/\n/g,'<br>')}</div>
   </div>` : d.weight ? `
-  <div class="ai-box">
-    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span></div>
-    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:12px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
-    <div style="margin-bottom:12px;">
-      <label style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600;display:block;margin-bottom:6px;">💬 มีอะไรอยากให้ AI รับรู้เพิ่มเติมไหม? <span style="font-weight:400;opacity:.7;">(ไม่บังคับ)</span></label>
-      <textarea id="ai-user-concern" rows="2" style="width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:10px 12px;color:white;font-family:inherit;font-size:13px;line-height:1.5;resize:none;outline:none;" placeholder="เช่น เครียดมาก นอนไม่หลับ มีอาการใจสั่น หรือข้อกังวลอื่นๆ ที่ไม่ได้อยู่ในผลตรวจ..."></textarea>
-    </div>
-    <div style="text-align:right;">
-      <button class="btn-gold" style="padding:8px 20px;font-size:13px;" onclick="runAI()">🤖 ประเมินเลย</button>
-    </div>
-    <div class="ai-text" id="ai-result-text" style="opacity:.65;margin-top:12px;">กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ</div>
+  <div class="ai-box" style="text-align:center;padding:24px 20px;">
+    <div style="font-size:32px;margin-bottom:8px;">🤖</div>
+    <div style="font-weight:700;font-size:15px;margin-bottom:6px;">ยังไม่ได้ประเมินสุขภาพ AI ปี ${selectedYear}</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:16px;">ไปที่หน้า AI ประเมินสุขภาพเพื่อให้ AI วิเคราะห์ผลตรวจของคุณ</div>
+    <button class="btn-gold" style="padding:8px 24px;font-size:13px;" onclick="goto('ai')">ไปประเมินเลย →</button>
   </div>` : ''}
   `;
 
@@ -2239,12 +2233,22 @@ async function loadAIPage() {
   const el = document.getElementById('ai-content');
   if (!annualData.length) { el.innerHTML = '<div class="empty"><div class="empty-ico">🤖</div><h3>ยังไม่มีข้อมูล</h3></div>'; return; }
   const d = annualData[0];
+  const hasData = d.weight || d.fbs;
   el.innerHTML = `
   <div class="ai-box">
     <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น — ปี ${d.checkup_year}</span>
-    <button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">🔄 ประเมินใหม่</button></div>
+    ${d.ai_summary ? '<span style="margin-left:auto;padding:5px 12px;font-size:11px;background:rgba(255,255,255,.15);border-radius:20px;color:rgba(255,255,255,.75);">✅ ประเมินแล้ว</span>' : ''}
+    </div>
     <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่การวินิจฉัยทางการแพทย์</div>
-    <div class="ai-text" id="ai-result-text">${d.ai_summary ? d.ai_summary.replace(/\n/g,'<br>') : '<span style="opacity:.65">กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ</span>'}</div>
+    ${!d.ai_summary && hasData ? `
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600;display:block;margin-bottom:6px;">💬 มีอะไรอยากให้ AI รับรู้เพิ่มเติมไหม? <span style="font-weight:400;opacity:.7;">(ไม่บังคับ)</span></label>
+      <textarea id="ai-user-concern" rows="2" style="width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:10px 12px;color:white;font-family:inherit;font-size:13px;line-height:1.5;resize:none;outline:none;" placeholder="เช่น เครียดมาก นอนไม่หลับ มีอาการใจสั่น หรือข้อกังวลอื่นๆ ที่ไม่ได้อยู่ในผลตรวจ..."></textarea>
+    </div>
+    <div style="text-align:right;margin-bottom:12px;">
+      <button class="btn-gold" style="padding:8px 20px;font-size:13px;" onclick="runAI()">🤖 ประเมินเลย</button>
+    </div>` : ''}
+    <div class="ai-text" id="ai-result-text">${d.ai_summary ? d.ai_summary.replace(/\n/g,'<br>') : hasData ? '' : '<span style="opacity:.65">กรุณาลงข้อมูลผลตรวจก่อนเพื่อให้ AI ประเมิน</span>'}</div>
   </div>
   </div>
   ${renderNCDBox(d)}
