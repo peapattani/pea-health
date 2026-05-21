@@ -2001,9 +2001,16 @@ function renderDashboard() {
     <div class="ai-text">${d.ai_summary.replace(/\n/g,'<br>')}</div>
   </div>` : `
   <div class="ai-box">
-    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span><button class="btn-gold" style="margin-left:auto;padding:6px 14px;font-size:12px;" onclick="runAI()">ประเมินเลย</button></div>
-    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:10px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
-    <div class="ai-text" id="ai-result-text" style="opacity:.65;">กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ</div>
+    <div class="ai-head"><div class="ai-dot"></div><span class="ai-title">🤖 ประเมินสุขภาพเบื้องต้น</span></div>
+    <div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:12px;font-style:italic;">⚕️ ข้อมูลประกอบการดูแลสุขภาพ ไม่ใช่คำวินิจฉัยแพทย์</div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:12px;color:rgba(255,255,255,.8);font-weight:600;display:block;margin-bottom:6px;">💬 มีอะไรอยากให้ AI รับรู้เพิ่มเติมไหม? <span style="font-weight:400;opacity:.7;">(ไม่บังคับ)</span></label>
+      <textarea id="ai-user-concern" rows="2" style="width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:10px 12px;color:white;font-family:inherit;font-size:13px;line-height:1.5;resize:none;outline:none;" placeholder="เช่น เครียดมาก นอนไม่หลับ มีอาการใจสั่น หรือข้อกังวลอื่นๆ ที่ไม่ได้อยู่ในผลตรวจ..."></textarea>
+    </div>
+    <div style="text-align:right;">
+      <button class="btn-gold" style="padding:8px 20px;font-size:13px;" onclick="runAI()">🤖 ประเมินเลย</button>
+    </div>
+    <div class="ai-text" id="ai-result-text" style="opacity:.65;margin-top:12px;">กดปุ่มเพื่อให้ AI ประเมินสุขภาพเบื้องต้นจากผลตรวจของคุณ</div>
   </div>`}
   `;
 
@@ -2261,6 +2268,17 @@ async function runAI() {
   const d = annualData.find(r => r.checkup_year === selectedYear) || annualData[0];
   if (!d) return;
   if (d.ai_summary) { showNotif('🔒 ประเมินแล้วสำหรับปี ' + selectedYear + ' (ประเมินได้1 ครั้งต่อปีเทานั้น)', 'error'); return; }
+  // ดึงข้อกังวลของพนักงาน
+  const concernEl = document.getElementById('ai-user-concern');
+  const userConcern = concernEl ? concernEl.value.trim() : '';
+  // Safety check: สัญญาณวิกฤต mental health
+  const crisisKeywords = ['ทำร้ายตัวเอง','อยากตาย','ฆ่าตัวตาย','ไม่อยากมีชีวิต','หมดหวัง','สิ้นหวัง','ไม่อยากอยู่'];
+  if (userConcern && crisisKeywords.some(k => userConcern.includes(k))) {
+    const textEl = document.getElementById('ai-result-text');
+    if (textEl) textEl.innerHTML = '<div style="background:rgba(220,38,38,.2);border:1px solid rgba(220,38,38,.5);border-radius:8px;padding:14px;font-size:13px;line-height:1.8;"><strong style="color:#FCA5A5;">💙 ขอบคุณที่ไว้วางใจบอกเรา</strong><br>สิ่งที่คุณรู้สึกอยู่นี้สำคัญมาก และมีคนพร้อมรับฟังคุณเสมอ<br><br>📞 <strong style="color:#FCA5A5;">สายด่วนสุขภาพจิต 1323</strong> — โทรได้เลย 24 ชั่วโมง ฟรี ไม่มีค่าใช้จ่าย<br>หรือปรึกษาแพทย์ / พยาบาลขององค์กรได้โดยตรงครับ</div>';
+    if (textEl) textEl.style.opacity = '1';
+    return;
+  }
   const textEl = document.getElementById('ai-result-text');
   if (textEl) textEl.innerHTML = '<span class="spinner"></span> AI กำลังประเมินสุขภาพเบื้องต้น...';
 
@@ -2289,10 +2307,16 @@ async function runAI() {
 - Hemoglobin: ${d.hemoglobin||'ไม่ได้ตรวจ'} g/dL, Hematocrit: ${d.hematocrit||'ไม่ได้ตรวจ'}%
 - WBC: ${d.wbc||'ไม่ได้ตรวจ'}, Platelet: ${d.platelet||'ไม่ได้ตรวจ'}
 - EKG: ${d.ekg_result||'ไม่ได้ตรวจ'}, X-Ray: ${d.xray_result||'ไม่ได้ตรวจ'}, ปัสสาวะ: ${d.urine_result||'ไม่ได้ตรวจ'}
+${userConcern ? `
+💬 ข้อกังวล/สิ่งผิดปกติที่พนักงานแจ้ง: "${userConcern}"
+(กรุณานำข้อกังวลนี้ไปเชื่อมโยงกับผลตรวจ และตอบในหัวข้อ "💬 เกี่ยวกับสิ่งที่คุณแจ้ง" ก่อนหัวข้ออื่น)` : ''}
 
 กรุณาวิเคราะห์และตอบเป็นภาษาไทย กระชับ ชัดเจน แต่ละหัวข้อไม่เกิน 4-5 บรรทัด:
 
-🩺 สรุปภาวะสุขภาพโดยรวม
+${userConcern ? `💬 เกี่ยวกับสิ่งที่คุณแจ้ง
+เชื่อมโยงข้อกังวลของพนักงานกับผลตรวจ อธิบายว่าเกี่ยวข้องกันอย่างไร และควรดูแลอย่างไร
+
+` : ''}🩺 สรุปภาวะสุขภาพโดยรวม
 บอกว่าสุขภาพอยู่ระดับไหน มีความเสี่ยงอะไรที่น่ากังวลหรือไม่
 
 ⚠️ ค่าที่ผิดปกติ (เฉพาะค่าที่ผิดจริงเท่านั้น)
