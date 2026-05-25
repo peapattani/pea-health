@@ -1861,12 +1861,58 @@ async function loadDashboard() {
       return;
     }
     selectedYear = annualData[0].checkup_year;
-    // Add computed scores
-    annualData.forEach(d => { d._score = calcScore(d); }); // recalc always
+    annualData.forEach(d => { d._score = calcScore(d); });
     renderDashboard();
+
+    // โหลด followups และแสดงผล
+    const { data: fuData } = await sb.from('health_followups')
+      .select('*')
+      .eq('emp_id', currentUser.emp_id)
+      .order('source_year', { ascending: false });
+    renderFollowups(fuData || []);
+
   } catch(e) {
     el.innerHTML = `<div class="empty"><div class="empty-ico">⚠️</div><h3>${e.message}</h3></div>`;
   }
+}
+
+function renderFollowups(items) {
+  const el = document.getElementById('followup-section');
+  if (!el) return;
+
+  // กรองเฉพาะปีปัจจุบัน (ปีที่ตรวจล่าสุด + 1)
+  const latestYear = annualData.length ? annualData[0].checkup_year : 0;
+  const relevant = items.filter(f => f.source_year === latestYear);
+  if (!relevant.length) { el.innerHTML = ''; return; }
+
+  const currentBEYear = new Date().getFullYear() + 543;
+  const isPast = latestYear + 1 <= currentBEYear;
+
+  el.innerHTML = `
+  <div style="background:linear-gradient(135deg,#FFFBEB,#FEF3C7);border:2px solid #D97706;border-radius:14px;padding:20px;margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+      <span style="font-size:22px;">📋</span>
+      <div>
+        <div style="font-family:'Prompt',sans-serif;font-size:14px;font-weight:700;color:#92400E;">
+          รายการแนะนำตรวจเพิ่มเติม ปี ${latestYear + 1}
+        </div>
+        <div style="font-size:12px;color:#B45309;margin-top:2px;">
+          จากการวิเคราะห์ AI ปี ${latestYear} — เพื่อประกอบการตัดสินใจ ไม่ใช่คำสั่งแพทย์
+        </div>
+      </div>
+      ${isPast ? '<span style="margin-left:auto;background:#D97706;color:white;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;">ถึงกำหนดแล้ว</span>' : ''}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${relevant.map(f => `
+        <div style="background:white;border-radius:10px;padding:12px 14px;border:1px solid #FCD34D;display:flex;align-items:flex-start;gap:10px;">
+          <span style="font-size:18px;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:#92400E;">${f.item}</div>
+            <div style="font-size:12px;color:#B45309;margin-top:3px;">${f.reason}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
 }
 
 function renderDashboard() {
@@ -2006,6 +2052,9 @@ function renderDashboard() {
     <div style="font-size:12px;color:rgba(255,255,255,.6);margin-bottom:16px;">ไปที่หน้า AI ประเมินสุขภาพเพื่อให้ AI วิเคราะห์ผลตรวจของคุณ</div>
     <button class="btn-gold" style="padding:8px 24px;font-size:13px;" onclick="goto('ai')">ไปประเมินเลย →</button>
   </div>` : ''}
+
+  <!-- FOLLOWUP BOX -->
+  <div id="followup-section"></div>
   `;
 
   // Draw charts after DOM ready
@@ -2333,7 +2382,13 @@ ${userConcern ? `💬 เกี่ยวกับสิ่งที่คุณ�
 อาหาร การออกกำลังกาย และพฤติกรรมที่ควรปรับ
 
 📅 แนวทางการรักษาและการติดตามผล
-แนะนำข้อมูลการรักษาที่จำเป็นและหมอมักไม่ได้บอก ควรตรวจซ้ำเมื่อไหร่ และตรวจอะไรเพิ่ม`;
+แนะนำข้อมูลการรักษาที่จำเป็นและหมอมักไม่ได้บอก ควรตรวจซ้ำเมื่อไหร่ และตรวจอะไรเพิ่ม
+
+สุดท้าย ให้สรุปรายการที่ควรติดตามในปีหน้าในรูปแบบ JSON ดังนี้ (ห้ามละเว้น):
+<followups>
+[{"item": "ชื่อการตรวจ", "reason": "เหตุผลสั้นๆ"}]
+</followups>
+ถ้าไม่มีรายการติดตามให้ return <followups>[]</followups>`;
 
   try {
     if (!aiKey) throw new Error('ไม่พบ API Key กรุณาติดต่อผู้ดูแลระบบ');
@@ -2343,7 +2398,34 @@ ${userConcern ? `💬 เกี่ยวกับสิ่งที่คุณ�
       body: JSON.stringify({ model:'claude-sonnet-4-6', max_tokens:4000, messages:[{role:'user',content:prompt}] })
     });
     const json = await res.json();
-    const summary = json.content?.[0]?.text || 'ไม่สามารถประเมินได้';
+    const fullText = json.content?.[0]?.text || 'ไม่สามารถประเมินได้';
+
+    // แยก followups ออกจาก summary ก่อนแสดงผล
+    const followupMatch = fullText.match(/<followups>([\s\S]*?)<\/followups>/);
+    const summary = fullText.replace(/<followups>[\s\S]*?<\/followups>/g, '').trim();
+
+    // บันทึก followups ลง Supabase
+    if (followupMatch) {
+      try {
+        const items = JSON.parse(followupMatch[1].trim());
+        if (items.length > 0) {
+          // ลบรายการเก่าของปีนี้ก่อน แล้วค่อย insert ใหม่
+          await sb.from('health_followups')
+            .delete()
+            .eq('emp_id', currentUser.emp_id)
+            .eq('source_year', d.checkup_year);
+          const rows = items.map(it => ({
+            emp_id: currentUser.emp_id,
+            source_year: d.checkup_year,
+            followup_year: d.checkup_year + 1,
+            item: it.item,
+            reason: it.reason || ''
+          }));
+          await sb.from('health_followups').insert(rows);
+        }
+      } catch(e) { console.warn('followup parse error', e); }
+    }
+
     const score = calcScore(d);
     await sb.from('annual_checkup').update({ ai_summary: summary, ai_score: score }).eq('id', d.id);
     const idx = annualData.findIndex(r => r.checkup_year === d.checkup_year);
