@@ -3723,7 +3723,7 @@ async function loadOrgHealth() {
     // ดึงข้อมูลทั้งหมดพร้อมกัน (รวม 3 ปีสำหรับ trend)
     const [annualRes, empRes, annualWithEmpRes, trendRes] = await Promise.all([
       sb.from('annual_checkup').select('emp_id,bmi,bp_systolic,fbs,total_cholesterol,hdl,triglyceride,sgot,sgpt,creatinine,ekg_result,ai_score').eq('checkup_year', useYear).limit(1000),
-      sb.from('employees').select('emp_id,full_name,department').eq('role','employee'),
+      sb.from('employees').select('emp_id,full_name,department'),
       sb.from('annual_checkup').select('emp_id,ai_score,checkup_year,bp_systolic,fbs,bmi,total_cholesterol,triglyceride,hdl,creatinine,sgot,sgpt,ekg_result,employees(full_name,department,gender)').eq('checkup_year', useYear).limit(1000),
       sb.from('annual_checkup').select('checkup_year,ai_score,bmi,bp_systolic,fbs,total_cholesterol').gte('checkup_year', useYear-2).order('checkup_year').limit(1000),
     ]);
@@ -4258,7 +4258,7 @@ async function exportRiskReportPDF(selectedYear) {
   try {
     // ดึงข้อมูลทั้งหมด
     const [empRes, annualRes, riskRes, trendRes] = await Promise.all([
-      sb.from('employees').select('emp_id,full_name,department,gender').eq('role','employee'),
+      sb.from('employees').select('emp_id,full_name,department,gender'),
       sb.from('annual_checkup').select('emp_id,checkup_year,bmi,bp_systolic,fbs,total_cholesterol,triglyceride,hdl,sgot,sgpt,creatinine,ekg_result,ai_score,employees(full_name,department)').order('checkup_year',{ascending:false}).limit(1000),
       sb.from('risk_checkup').select('emp_id,checkup_year,hearing_result,hearing_right,hearing_left,fvc,fev1,lung_result,va_far,va_near,color_vision,eye_external,ekg_risk_result,overall_result,chemical_test,bp_systolic,bp_diastolic,bmi_risk,creatinine_risk,employees(full_name,department)').order('checkup_year',{ascending:false}).limit(1000),
       sb.from('annual_checkup').select('checkup_year,ai_score,bmi,bp_systolic,fbs,total_cholesterol').order('checkup_year').limit(1000),
