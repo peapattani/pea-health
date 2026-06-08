@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PEA Pattani Smart Health AI</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%236B21A8'/%3E%3Cpath d='M32 48 C32 48 14 36 14 24 C14 18 18 14 24 14 C27.5 14 30.5 15.8 32 18.5 C33.5 15.8 36.5 14 40 14 C46 14 50 18 50 24 C50 36 32 48 32 48Z' fill='%23FFD700'/%3E%3Cpolyline points='18,32 22,32 25,24 28,40 31,28 34,36 37,32 46,32' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23740460'/%3E%3Cpath d='M32 48 C32 48 14 36 14 24 C14 18 18 14 24 14 C27.5 14 30.5 15.8 32 18.5 C33.5 15.8 36.5 14 40 14 C46 14 50 18 50 24 C50 36 32 48 32 48Z' fill='%23C7911B'/%3E%3Cpolyline points='18,32 22,32 25,24 28,40 31,28 34,36 37,32 46,32' fill='none' stroke='%23fff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Prompt:wght@400;600;700;800&display=swap">
@@ -20,7 +20,7 @@
   --green: #00843D; --green-dark: #0A2818; --green-mid: #1B5E35;
   --green-light: #E8F5EE; --accent: #00C96A;
   --danger: #DC2626; --warning: #D97706; --warning-bg: #FFFBEB;
-  --info: #1D4ED8; --info-bg: #EFF6FF;
+  --info: #740460; --info-bg: #FDF0FB;
   --text: #111827; --sub: #6B7280; --border: #E5E7EB;
   --bg: #F8FAFC; --card: #FFFFFF;
   --score-excellent: #059669; --score-good: #16A34A;
@@ -132,7 +132,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
 .module-tag { padding:3px 11px; border-radius:20px; font-size:11px; font-weight:600; }
 .tag-annual { background:#FCEEF9; color:#5B21B6; }
 .tag-risk { background:#FEF3C7; color:#92400E; }
-.tag-admin { background:#DBEAFE; color:#1E40AF; }
+.tag-admin { background:#FCEEF9; color:#5A0349; }
 
 .pad { padding:24px; }
 .page { display:none; }
@@ -160,7 +160,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
 .b-warn { background:#FEF3C7; color:#92400E; }
 .b-danger { background:#FEE2E2; color:#B91C1C; }
 @keyframes pulse-red { 0%,100% { box-shadow:0 0 0 0 rgba(220,38,38,.4); } 50% { box-shadow:0 0 0 6px rgba(220,38,38,0); } }
-.b-info { background:#DBEAFE; color:#1E40AF; }
+.b-info { background:#FCEEF9; color:#5A0349; }
 .b-gray { background:#F3F4F6; color:#6B7280; }
 .b-purple { background:#FCEEF9; color:#5B21B6; }
 
@@ -213,7 +213,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
 .ai-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
 .at-warn { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:rgba(217,119,6,.2); color:#D97706; border:1px solid rgba(217,119,6,.3); }
 .at-good { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:rgba(0,201,106,.2); color:#6EE7B7; border:1px solid rgba(0,201,106,.3); }
-.at-info { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:rgba(29,78,216,.2); color:#2563EB; border:1px solid rgba(29,78,216,.3); }
+.at-info { padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; background:rgba(116,4,96,.2); color:#740460; border:1px solid rgba(116,4,96,.3); }
 
 /* ===== FORM ===== */
 .sec-title { font-family:'Prompt',sans-serif; font-size:13px; font-weight:700; color:var(--pea-purple-dark); margin:18px 0 10px; padding-bottom:7px; border-bottom:2px solid #FCEEF9; display:flex; align-items:center; gap:8px; }
@@ -247,7 +247,7 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
 .empty { text-align:center; padding:48px 24px; color:var(--sub); }
 .empty-ico { font-size:44px; margin-bottom:10px; }
 .alert-warn { padding:12px 15px; border-radius:9px; font-size:13px; margin-bottom:18px; background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; }
-.alert-info { padding:12px 15px; border-radius:9px; font-size:13px; margin-bottom:18px; background:#EFF6FF; border:1px solid #BFDBFE; color:#1E40AF; }
+.alert-info { padding:12px 15px; border-radius:9px; font-size:13px; margin-bottom:18px; background:#FDF0FB; border:1px solid #F0C8EB; color:#5A0349; }
 .ytabs { display:flex; gap:5px; }
 .ytab { padding:4px 12px; border-radius:20px; border:1px solid var(--border); background:white; color:var(--sub); font-size:12px; cursor:pointer; transition:.2s; }
 .ytab.active { background:var(--pea-purple); border-color:var(--pea-purple); color:white; font-weight:600; }
@@ -374,10 +374,10 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
 .pdpa-purpose-ico { font-size:16px; flex-shrink:0; margin-top:1px; }
 .pdpa-purpose-text h4 { font-size:13px; font-weight:600; color:var(--text); margin:0 0 2px; }
 .pdpa-purpose-text p { font-size:12px; color:var(--sub); margin:0; line-height:1.5; }
-.pdpa-rights { background:linear-gradient(135deg,#EFF6FF,#DBEAFE); border:1px solid #BFDBFE; border-radius:10px; padding:14px 16px; }
-.pdpa-rights h4 { font-size:12px; font-weight:700; color:#1E40AF; margin:0 0 8px; }
+.pdpa-rights { background:linear-gradient(135deg,#FDF0FB,#FCEEF9); border:1px solid #F0C8EB; border-radius:10px; padding:14px 16px; }
+.pdpa-rights h4 { font-size:12px; font-weight:700; color:#5A0349; margin:0 0 8px; }
 .pdpa-rights-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
-.pdpa-right-item { font-size:11px; color:#1E40AF; display:flex; align-items:center; gap:5px; }
+.pdpa-right-item { font-size:11px; color:#5A0349; display:flex; align-items:center; gap:5px; }
 .pdpa-divider { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .pdpa-consent-box { background:#FEFCE8; border:2px solid #FDE68A; border-radius:12px; padding:14px 16px; margin-bottom:14px; }
 .pdpa-consent-box.required { border-color:#C4B5FD; background:#FDF0FB; }
@@ -555,42 +555,75 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
 <div id="login-screen" class="screen active">
   <div class="login-card">
     <div class="login-header">
-      <!-- Lightning Bolt Logo -->
-      <svg style="width:60px;height:60px;flex-shrink:0;" viewBox="0 0 100 100">
+      <svg style="width:56px;height:56px;flex-shrink:0;" viewBox="0 0 100 100">
         <defs>
           <radialGradient id="glow-login" cx="50%" cy="40%" r="55%">
             <stop offset="0%" stop-color="#FFFDE7"/>
             <stop offset="60%" stop-color="#C7911B"/>
-            <stop offset="100%" stop-color="#F59E0B"/>
+            <stop offset="100%" stop-color="#9A6E0E"/>
           </radialGradient>
-          <filter id="blur-login"><feGaussianBlur stdDeviation="3" result="blur"/><feComposite in="SourceGraphic" in2="blur" operator="over"/></filter>
         </defs>
-        <!-- Glow circle -->
-        <circle cx="50" cy="50" r="44" fill="rgba(199,145,27,0.12)"/>
-        <circle cx="50" cy="50" r="38" fill="rgba(199,145,27,0.08)"/>
-        <!-- Big bold lightning bolt -->
-        <polygon points="58,8 28,52 48,52 42,92 72,48 52,48" fill="url(#glow-login)" filter="url(#blur-login)" opacity="0.35"/>
+        <circle cx="50" cy="50" r="44" fill="rgba(199,145,27,0.13)"/>
+        <circle cx="50" cy="50" r="34" fill="rgba(199,145,27,0.07)"/>
         <polygon points="58,8 28,52 48,52 42,92 72,48 52,48" fill="url(#glow-login)"/>
-        <!-- Highlight streak -->
         <polygon points="56,14 40,46 50,46" fill="rgba(255,255,255,0.5)"/>
       </svg>
       <div class="login-title">
-        <h1>PEA PATTANI<br>Smart Health AI</h1>
-        <p>ระบบบันทึกข้อมูลสุขภาพอัจฉริยะ</p>
+        <h1>PEA <span style="color:#C7911B;">PATTANI</span><br>Smart Health AI</h1>
+        <p>ระบบบันทึกข้อมูลสุขภาพอัจฉริยะ · การไฟฟ้าส่วนภูมิภาคปัตตานี</p>
       </div>
     </div>
-    
-    <div class="tab-row">
-      <div class="tab active" id="tab-annual" onclick="setTab('annual')">🏥 ตรวจสุขภาพประจำปี</div>
-      <div class="tab" id="tab-risk" onclick="setTab('risk')">⚠️ ตรวจปัจจัยเสี่ยง</div>
+
+    <div class="tab-row" style="border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.15);gap:0;">
+      <div class="tab active" id="tab-annual" onclick="setTab('annual')" style="border-right:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;gap:7px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        ตรวจสุขภาพประจำปี
+      </div>
+      <div class="tab" id="tab-risk" onclick="setTab('risk')" style="display:flex;align-items:center;justify-content:center;gap:7px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        ตรวจปัจจัยเสี่ยง
+      </div>
     </div>
-    <label class="lbl">รหัสพนักงาน</label>
-    <input class="linput" type="text" id="l-empid" placeholder="เช่น 123456" autocomplete="username">
-    <label class="lbl">รหัสผ่าน</label>
-    <input class="linput" type="password" id="l-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn-login" onclick="doLogin()" id="btn-login-submit">🔐 เข้าสู่ระบบ</button>
+
+    <label class="lbl" style="display:flex;align-items:center;gap:7px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      รหัสพนักงาน
+    </label>
+    <input class="linput" type="text" id="l-empid" placeholder="กรอกรหัสพนักงาน" autocomplete="username">
+
+    <label class="lbl" style="display:flex;align-items:center;gap:7px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      รหัสผ่าน
+    </label>
+    <input class="linput" type="password" id="l-pass" placeholder="กรอกรหัสผ่าน" onkeydown="if(event.key==='Enter')doLogin()">
+
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(199,145,27,.4),transparent);margin:4px 0 16px;"></div>
+
+    <button class="btn-login" onclick="doLogin()" id="btn-login-submit" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      เข้าสู่ระบบ
+    </button>
+
     <div class="err-msg" id="login-err"></div>
-    <p class="hint">บันทึกผลตรวจสุขภาพประจำปีได้ทุกคน &nbsp;|&nbsp; ปัจจัยเสี่ยง: เฉพาะผู้มีสิทธิ์</p>
+
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <div style="flex:1;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:7px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C7911B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:rgba(199,145,27,.9);">ระบบปลอดภัย</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);">PDPA Compliant</div>
+        </div>
+      </div>
+      <div style="flex:1;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:7px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C7911B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        <div>
+          <div style="font-size:11px;font-weight:700;color:rgba(199,145,27,.9);">AI วิเคราะห์</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.35);">Claude Sonnet</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="hint">ตรวจสุขภาพประจำปี: พนักงานทุกคน &nbsp;·&nbsp; ปัจจัยเสี่ยง: เฉพาะผู้มีสิทธิ์</p>
   </div>
 </div>
 
@@ -2563,7 +2596,7 @@ function calcNCDRisk(d, gender) {
   if (highCount>=2)     { overallColor='#DC2626'; overallLabel='\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07\u0e2a\u0e39\u0e07\u0e21\u0e32\u0e01 \u2014 \u0e1e\u0e1a\u0e41\u0e1e\u0e17\u0e22\u0e4c\u0e42\u0e14\u0e22\u0e40\u0e23\u0e47\u0e27'; }
   else if (highCount>=1){ overallColor='#EA580C'; overallLabel='\u0e21\u0e35\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07\u0e2a\u0e39\u0e07 \u2014 \u0e15\u0e49\u0e2d\u0e07\u0e14\u0e39\u0e41\u0e25\u0e2d\u0e22\u0e48\u0e32\u0e07\u0e43\u0e01\u0e25\u0e49\u0e0a\u0e34\u0e14'; }
   else if (medCount>=2) { overallColor='#D97706'; overallLabel='\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07\u0e1b\u0e32\u0e19\u0e01\u0e25\u0e32\u0e07 \u2014 \u0e40\u0e1d\u0e49\u0e32\u0e23\u0e30\u0e27\u0e31\u0e07'; }
-  else if (medCount>=1||lowCount>=1){ overallColor='#2563EB'; overallLabel='\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07\u0e19\u0e49\u0e2d\u0e22 \u2014 \u0e15\u0e34\u0e14\u0e15\u0e32\u0e21'; }
+  else if (medCount>=1||lowCount>=1){ overallColor='#740460'; overallLabel='\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07\u0e19\u0e49\u0e2d\u0e22 \u2014 \u0e15\u0e34\u0e14\u0e15\u0e32\u0e21'; }
   return { risks, overallColor, overallLabel, highCount, medCount, lowCount };
 }
 
@@ -2571,8 +2604,8 @@ function renderNCDBox(d) {
   const gender = (currentUser && currentUser.gender) || 'male';
   const { risks, overallColor, overallLabel, highCount, medCount, lowCount } = calcNCDRisk(d, gender);
 
-  const levelColor = { high:'#DC2626', medium:'#D97706', low:'#2563EB' };
-  const levelBg    = { high:'#FEF2F2', medium:'#FFFBEB', low:'#EFF6FF' };
+  const levelColor = { high:'#DC2626', medium:'#D97706', low:'#740460' };
+  const levelBg    = { high:'#FEF2F2', medium:'#FFFBEB', low:'#FDF0FB' };
   const levelLabel = { high:'\u0e2a\u0e39\u0e07', medium:'\u0e1b\u0e32\u0e19\u0e01\u0e25\u0e32\u0e07', low:'\u0e19\u0e49\u0e2d\u0e22' };
 
   const riskCards = risks.length === 0
@@ -2594,7 +2627,7 @@ function renderNCDBox(d) {
   var summary = '<div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">'
     + '<div style="flex:1;min-width:80px;background:#FEE2E2;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#DC2626;">'+highCount+'</div><div style="font-size:10px;color:#7F1D1D;">\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07\u0e2a\u0e39\u0e07</div></div>'
     + '<div style="flex:1;min-width:80px;background:#FEF3C7;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#D97706;">'+medCount+'</div><div style="font-size:10px;color:#78350F;">\u0e1b\u0e32\u0e19\u0e01\u0e25\u0e32\u0e07</div></div>'
-    + '<div style="flex:1;min-width:80px;background:#DBEAFE;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#2563EB;">'+lowCount+'</div><div style="font-size:10px;color:#1E3A8A;">\u0e19\u0e49\u0e2d\u0e22</div></div>'
+    + '<div style="flex:1;min-width:80px;background:#FCEEF9;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:20px;font-weight:800;color:#740460;">'+lowCount+'</div><div style="font-size:10px;color:#5A0349;">\u0e19\u0e49\u0e2d\u0e22</div></div>'
     + '<div style="flex:2;min-width:120px;background:#F9FAFB;border:1px solid #E5E7EB;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:13px;font-weight:700;color:'+overallColor+';">'+overallLabel+'</div><div style="font-size:10px;color:#6B7280;margin-top:2px;">\u0e20\u0e32\u0e1e\u0e23\u0e27\u0e21\u0e04\u0e27\u0e32\u0e21\u0e40\u0e2a\u0e35\u0e48\u0e22\u0e07 NCD</div></div>'
     + '</div>';
 
@@ -3049,7 +3082,7 @@ async function loadRiskDash() {
         dashCharts[id] = new Chart(ctx, { type:'line', data:{ labels:sorted.map(r=>'ปี '+r.checkup_year), datasets }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ labels:{ font:{ family:'Sarabun', size:11 }}}}, scales:{ y:{ ticks:{ font:{ family:'Sarabun' }}, grid:{ color:'#F3F4F6' }, ...opts }, x:{ ticks:{ font:{ family:'Sarabun', size:11 }}}}}});
       };
       mkChart('chart-hearing', null, [{label:'หูขวา (dB)',data:sorted.map(r=>r.hearing_right),borderColor:'#740460',borderWidth:2,tension:.4,pointRadius:5,pointBackgroundColor:'#740460'},{label:'หูซ้าย (dB)',data:sorted.map(r=>r.hearing_left),borderColor:'#D97706',borderWidth:2,tension:.4,pointRadius:5,pointBackgroundColor:'#D97706'}]);
-      mkChart('chart-lung', null, [{label:'FVC (%)',data:sorted.map(r=>r.fvc),borderColor:'#059669',borderWidth:2,tension:.4,fill:true,backgroundColor:'rgba(5,150,105,.07)',pointRadius:5,pointBackgroundColor:'#059669'},{label:'FEV1 (%)',data:sorted.map(r=>r.fev1),borderColor:'#1D4ED8',borderWidth:2,tension:.4,pointRadius:5,pointBackgroundColor:'#1D4ED8'}],{min:50,max:110});
+      mkChart('chart-lung', null, [{label:'FVC (%)',data:sorted.map(r=>r.fvc),borderColor:'#059669',borderWidth:2,tension:.4,fill:true,backgroundColor:'rgba(5,150,105,.07)',pointRadius:5,pointBackgroundColor:'#059669'},{label:'FEV1 (%)',data:sorted.map(r=>r.fev1),borderColor:'#740460',borderWidth:2,tension:.4,pointRadius:5,pointBackgroundColor:'#740460'}],{min:50,max:110});
       mkChart('chart-va', null, [{label:'VA ระยะไกล',data:sorted.map(r=>{if(!r.va_far)return null;const m=r.va_far.match(/(\d+)\/(\d+)/);return m?parseFloat(m[1])/parseFloat(m[2])*6:null;}),borderColor:'#8F0575',borderWidth:2,tension:.4,pointRadius:5,pointBackgroundColor:'#8F0575'}]);
       mkChart('chart-bmi-risk', null, [{label:'BMI',data:sorted.map(r=>r.bmi_risk),borderColor:'#B45309',backgroundColor:'rgba(180,83,9,.08)',borderWidth:2,tension:.4,fill:true,pointRadius:5,pointBackgroundColor:'#B45309'}]);
     }, 100);
@@ -4084,7 +4117,7 @@ async function loadOverview(forceYear) {
 
   el.innerHTML =
     // === KPI BANNER (บนสุด) ===
-    '<div style="background:linear-gradient(135deg,#1E3A5F,#2D5986);border-radius:14px;padding:16px 20px;color:white;margin-bottom:18px;">' +
+    '<div style="background:linear-gradient(135deg,#3D0230,#740460);border-radius:14px;padding:16px 20px;color:white;margin-bottom:18px;">' +
     '<div style="font-size:12px;font-weight:700;opacity:.7;margin-bottom:10px;">🛡️ สรุปภาพรวม — ปัจจัยเสี่ยง ปี ' + useYear + '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">' +
     '<div style="background:rgba(255,255,255,.12);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:22px;font-weight:800;">' + totalEmps + '</div><div style="font-size:10px;opacity:.75;margin-top:2px;">ต้องตรวจทั้งหมด</div></div>' +
@@ -4526,7 +4559,7 @@ async function exportRiskReportPDF(selectedYear) {
           {no:'3', title:'เฝ้าระวังพนักงานที่มีสมรรถภาพปอดลดลง', detail:'พบพนักงานที่มีสมรรถภาพปอดลดลง (FVC <80%) จำนวน '+lungAbn+' ราย ควรส่งพบแพทย์เฉพาะทางและประเมินสภาพแวดล้อมการทำงาน', color:'#ECFDF5', border:'#059669', text:'#064E3B'},
           {no:'4', title:'ติดตามผลตรวจสายตาพนักงานกลุ่มเสี่ยง', detail:'พบพนักงานมีความผิดปกติด้านสายตา (Color Vision / External Eye UV) จำนวน '+eyeAbn+' ราย ควรส่งพบจักษุแพทย์และพิจารณาจัดหาอุปกรณ์ป้องกันแสง UV', color:'#F0F9FF', border:'#0284C7', text:'#0C4A6E'},
           {no:'5', title:'ส่งเสริมการควบคุมน้ำหนักพนักงาน', detail:'พบพนักงานที่มี BMI เกินเกณฑ์ (≥23) จำนวน '+(riskYear.filter(function(r){return r.bmi_risk&&r.bmi_risk>=23;}).length)+' ราย ควรจัดกิจกรรมส่งเสริมสุขภาพและให้คำแนะนำด้านโภชนาการ', color:'#FFF7ED', border:'#EA580C', text:'#9A3412'},
-          {no:'6', title:'ติดตามตรวจสุขภาพซ้ำทุก 12 เดือน', detail:'พนักงานกลุ่มเสี่ยง '+riskGroup.length+' ราย ควรได้รับการติดตามผลทุก 12 เดือน พร้อมให้ความรู้ด้านสุขภาพและปรับเปลี่ยนพฤติกรรม', color:'#EFF6FF', border:'#3B82F6', text:'#1E40AF'},
+          {no:'6', title:'ติดตามตรวจสุขภาพซ้ำทุก 12 เดือน', detail:'พนักงานกลุ่มเสี่ยง '+riskGroup.length+' ราย ควรได้รับการติดตามผลทุก 12 เดือน พร้อมให้ความรู้ด้านสุขภาพและปรับเปลี่ยนพฤติกรรม', color:'#FDF0FB', border:'#8F0575', text:'#5A0349'},
         ].map(item=>`
         <div style="background:${item.color};border-left:5px solid ${item.border};border-radius:0 10px 10px 0;padding:16px 20px;margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
