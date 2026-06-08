@@ -570,16 +570,16 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
       </svg>
       <div class="login-title">
         <h1>PEA <span style="color:#C7911B;">PATTANI</span><br>Smart Health AI</h1>
-        <p>ระบบบันทึกข้อมูลสุขภาพอัจฉริยะ · การไฟฟ้าส่วนภูมิภาคปัตตานี</p>
+        <p>ระบบบันทึกข้อมูลสุขภาพอัจฉริยะ</p>
       </div>
     </div>
 
-    <div class="tab-row" style="border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,.15);gap:0;">
-      <div class="tab active" id="tab-annual" onclick="setTab('annual')" style="border-right:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;gap:7px;">
+    <div class="tab-row" style="gap:8px;">
+      <div class="tab active" id="tab-annual" onclick="setTab('annual')" style="display:flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;border:1px solid rgba(255,255,255,.15);">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         ตรวจสุขภาพประจำปี
       </div>
-      <div class="tab" id="tab-risk" onclick="setTab('risk')" style="display:flex;align-items:center;justify-content:center;gap:7px;">
+      <div class="tab" id="tab-risk" onclick="setTab('risk')" style="display:flex;align-items:center;justify-content:center;gap:7px;border-radius:10px;border:1px solid rgba(255,255,255,.15);">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         ตรวจปัจจัยเสี่ยง
       </div>
@@ -605,23 +605,6 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
     </button>
 
     <div class="err-msg" id="login-err"></div>
-
-    <div style="display:flex;gap:8px;margin-top:14px;">
-      <div style="flex:1;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:7px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C7911B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:rgba(199,145,27,.9);">ระบบปลอดภัย</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.35);">PDPA Compliant</div>
-        </div>
-      </div>
-      <div style="flex:1;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:7px;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#C7911B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        <div>
-          <div style="font-size:11px;font-weight:700;color:rgba(199,145,27,.9);">AI วิเคราะห์</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.35);">Claude Sonnet</div>
-        </div>
-      </div>
-    </div>
 
     <p class="hint">ตรวจสุขภาพประจำปี: พนักงานทุกคน &nbsp;·&nbsp; ปัจจัยเสี่ยง: เฉพาะผู้มีสิทธิ์</p>
   </div>
