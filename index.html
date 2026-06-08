@@ -951,6 +951,29 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
             <div class="fg"><label class="fl">สถานพยาบาล</label><input class="fi" type="text" id="rf-hospital"></div>
             <div class="fg"><label class="fl">แพทย์ผู้ตรวจ</label><input class="fi" type="text" id="rf-doctor"></div>
           </div>
+          <!-- ===== IMPORT FROM ANNUAL ===== -->
+          <div id="import-annual-bar" style="background:#EDE9FE;border:1px solid #C4B5FD;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:20px;">📋</span>
+              <div>
+                <div style="font-weight:700;font-size:13px;color:#5B21B6;">ดึงข้อมูลจากสุขภาพประจำปี</div>
+                <div style="font-size:12px;color:#7C3AED;">น้ำหนัก, BMI, ความดัน, EKG, Creatinine — ไม่ต้องกรอกซ้ำ</div>
+              </div>
+            </div>
+            <button onclick="importFromAnnual()" id="btn-import-annual" style="background:#6B21A8;color:white;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;">
+              📥 ดึงข้อมูล
+            </button>
+          </div>
+          <!-- preview ก่อน apply -->
+          <div id="annual-import-preview" style="display:none;background:#F5F3FF;border:1px solid #A78BFA;border-radius:10px;padding:14px 16px;margin-bottom:16px;">
+            <div style="font-weight:700;font-size:13px;color:#5B21B6;margin-bottom:10px;">✅ พบข้อมูลสุขภาพประจำปี — กรุณาตรวจสอบก่อนนำเข้า</div>
+            <div id="annual-import-fields" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:12px;"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onclick="applyAnnualImport()" style="background:#059669;color:white;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">✅ นำเข้าข้อมูล</button>
+              <button onclick="document.getElementById('annual-import-preview').style.display='none'" style="background:white;color:#6B7280;border:1px solid #D1D5DB;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit;">ยกเลิก</button>
+            </div>
+          </div>
+          <!-- ===== END IMPORT FROM ANNUAL ===== -->
           <div class="sec-title">🩸 ความดันโลหิต (Blood Pressure)</div>
           <div class="grid-form-3">
             <div class="fg"><label class="fl">ความดันบน (mmHg)</label><input class="fi" type="number" id="rf-bps" placeholder="เช่น 120"><div class="not-tested-wrap"><input type="checkbox" id="nt-riskbp" onchange="['rf-bps','rf-bpd','rf-pulse-risk'].forEach(x=>toggleField(x,'nt-riskbp'))"><label for="nt-riskbp">ไม่ได้ตรวจ</label></div></div>
@@ -2765,6 +2788,109 @@ function clearRiskForm() {
   document.querySelectorAll('#page-enter-risk .fi').forEach(el => { if (el.tagName !== 'SELECT') el.value = ''; el.disabled = false; });
   document.querySelectorAll('#page-enter-risk input[type=checkbox]').forEach(el => el.checked = false);
 }
+
+// ===== IMPORT FROM ANNUAL CHECKUP =====
+let _annualImportData = null;
+
+async function importFromAnnual() {
+  const btn = document.getElementById('btn-import-annual');
+  btn.textContent = '⏳ กำลังโหลด...'; btn.disabled = true;
+  try {
+    const year = parseInt(document.getElementById('rf-year').value);
+    const { data, error } = await sb.from('annual_checkup')
+      .select('checkup_year,checkup_date,hospital,weight,height,bmi,waist_circumference,bp_systolic,bp_diastolic,pulse,ekg_result,creatinine')
+      .eq('emp_id', currentUser.emp_id)
+      .eq('checkup_year', year)
+      .single();
+
+    if (error || !data) {
+      // ลองปีล่าสุดถ้าไม่พบปีที่เลือก
+      const { data: latest } = await sb.from('annual_checkup')
+        .select('checkup_year,checkup_date,hospital,weight,height,bmi,waist_circumference,bp_systolic,bp_diastolic,pulse,ekg_result,creatinine')
+        .eq('emp_id', currentUser.emp_id)
+        .order('checkup_year', { ascending: false })
+        .limit(1)
+        .single();
+      if (!latest) { showNotif('⚠️ ไม่พบข้อมูลสุขภาพประจำปี — กรุณาลงข้อมูลสุขภาพประจำปีก่อน', 'warning'); return; }
+      _annualImportData = latest;
+      showNotif(`ℹ️ ไม่พบข้อมูลปี ${year} — แสดงข้อมูลปีล่าสุด (${latest.checkup_year}) แทน`, 'warning');
+    } else {
+      _annualImportData = data;
+    }
+
+    // แสดง preview
+    const d = _annualImportData;
+    const fieldLabels = [
+      { key: 'bp_systolic',       label: 'ความดันบน',    unit: 'mmHg', val: d.bp_systolic },
+      { key: 'bp_diastolic',      label: 'ความดันล่าง',   unit: 'mmHg', val: d.bp_diastolic },
+      { key: 'pulse',             label: 'ชีพจร',         unit: 'bpm',  val: d.pulse },
+      { key: 'bmi',               label: 'BMI',           unit: '',     val: d.bmi },
+      { key: 'weight',            label: 'น้ำหนัก',       unit: 'กก.',  val: d.weight },
+      { key: 'height',            label: 'ส่วนสูง',       unit: 'ซม.',  val: d.height },
+      { key: 'ekg_result',        label: 'EKG',           unit: '',     val: d.ekg_result },
+      { key: 'creatinine',        label: 'Creatinine',    unit: 'mg/dL',val: d.creatinine },
+    ].filter(f => f.val !== null && f.val !== undefined && f.val !== '');
+
+    const rows = fieldLabels.map(f =>
+      `<div style="background:white;border-radius:7px;padding:8px 10px;border:1px solid #DDD6FE;">
+        <div style="font-size:11px;color:#7C3AED;font-weight:600;">${f.label}</div>
+        <div style="font-size:14px;font-weight:700;color:#1F2937;">${f.val} <span style="font-size:11px;color:#9CA3AF;">${f.unit}</span></div>
+      </div>`
+    ).join('');
+
+    document.getElementById('annual-import-fields').innerHTML = rows ||
+      '<div style="color:#9CA3AF;font-size:13px;">ไม่พบค่าที่ตรงกัน</div>';
+
+    const src = d.hospital ? ` (${d.hospital} ปี ${d.checkup_year})` : ` ปี ${d.checkup_year}`;
+    document.querySelector('#annual-import-preview .card-title, #annual-import-preview div:first-child').textContent;
+    document.getElementById('annual-import-preview').style.display = 'block';
+    document.querySelector('#annual-import-preview div:first-child').textContent =
+      `✅ พบข้อมูลสุขภาพประจำปี${src} — กรุณาตรวจสอบก่อนนำเข้า`;
+
+  } catch(e) {
+    showNotif('❌ ' + e.message, 'error');
+  }
+  btn.textContent = '📥 ดึงข้อมูล'; btn.disabled = false;
+}
+
+function applyAnnualImport() {
+  if (!_annualImportData) return;
+  const d = _annualImportData;
+  const set = (id, val) => { const el = document.getElementById(id); if (el && val !== null && val !== undefined) el.value = val; };
+
+  // ความดัน & ชีพจร
+  if (d.bp_systolic)  { set('rf-bps', d.bp_systolic); }
+  if (d.bp_diastolic) { set('rf-bpd', d.bp_diastolic); }
+  if (d.pulse)        { set('rf-pulse-risk', d.pulse); }
+
+  // BMI
+  if (d.bmi)          { set('rf-bmi', d.bmi); }
+
+  // EKG — map ค่าจาก annual → select ของ risk
+  if (d.ekg_result) {
+    const ekgEl = document.getElementById('rf-ekg');
+    if (ekgEl) {
+      const v = d.ekg_result.toLowerCase();
+      if (v.includes('ปกติ') || v === 'normal') ekgEl.value = 'ปกติ';
+      else if (v.includes('ผิดปกติ') || v === 'abnormal') ekgEl.value = 'ผิดปกติ';
+      // ถ้า map ไม่ได้ปล่อยไว้ตาม default
+    }
+  }
+
+  // Creatinine
+  if (d.creatinine) { set('rf-cr', d.creatinine); }
+
+  // สถานพยาบาล & วันที่ (ถ้ายังว่าง)
+  const hospEl = document.getElementById('rf-hospital');
+  if (hospEl && !hospEl.value && d.hospital) hospEl.value = d.hospital;
+  const dateEl = document.getElementById('rf-date');
+  if (dateEl && !dateEl.value && d.checkup_date) dateEl.value = d.checkup_date;
+
+  document.getElementById('annual-import-preview').style.display = 'none';
+  showNotif('✅ นำเข้าข้อมูลจากสุขภาพประจำปีแล้ว — กรุณาตรวจสอบและกรอกข้อมูลเพิ่มเติมให้ครบ', 'success');
+  _annualImportData = null;
+}
+// ===== END IMPORT FROM ANNUAL =====
 
 // ===== MY RISK =====
 async function loadMyRisk() {
