@@ -1663,7 +1663,7 @@ async function readLabWithAI() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': aiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
       body: JSON.stringify({
-        model: 'claude-opus-4-20250514',
+        model: 'claude-opus-4-8',
         max_tokens: 1024,
         messages: [{ role: 'user', content: [...imageBlocks, { type: 'text', text: jsonPrompt }] }]
       })
