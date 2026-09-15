@@ -3872,7 +3872,7 @@ async function loadOrgHealth() {
 
     const annual = annualRes.data||[], empAll = empRes.data||[], total = empAll.length, n = annual.length;
     if (!n) { el.innerHTML='<div class="empty"><div class="empty-ico">📊</div><h3>ยังไม่มีข้อมูลผลตรวจ</h3></div>'; return; }
-    const pct = c => n>0?Math.round(c/n*100):0;
+    const pct = c => total>0?Math.round(c/total*100):0;
 
     // --- KPI สรุปผู้บริหาร ---
     const scores = annual.map(r => calcScore(r)).filter(s=>s>0);
