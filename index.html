@@ -141,6 +141,34 @@ body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text)
 
 /* ===== CARDS ===== */
 .card { background:var(--card); border-radius:14px; padding:20px; border:1px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,.05); }
+/* ===== Follow-up by department ===== */
+.fu-list-wrap{display:flex;flex-direction:column;gap:10px;}
+.fu-row{background:var(--bg);border:1px solid var(--border);border-left:4px solid var(--c);border-radius:12px;overflow:hidden;}
+.fu-head{display:flex;align-items:center;gap:14px;padding:12px 14px;cursor:pointer;user-select:none;}
+.fu-head:hover{background:#F1F5F9;}
+.fu-main{flex:1;min-width:0;}
+.fu-name{font-size:14px;font-weight:700;color:var(--text);}
+.fu-bar{height:8px;background:#E5E7EB;border-radius:99px;overflow:hidden;margin:7px 0 4px;}
+.fu-fill{height:100%;background:#059669;border-radius:99px;}
+.fu-meta{font-size:11px;color:var(--sub);}
+.fu-num{text-align:right;line-height:1.15;min-width:64px;}
+.fu-num b{display:block;font-size:24px;font-weight:800;color:var(--c);}
+.fu-num span{font-size:10px;color:var(--sub);}
+.fu-chev{font-size:11px;color:var(--sub);transition:transform .2s;}
+.fu-row.open .fu-chev{transform:rotate(180deg);}
+.fu-body{display:none;padding:2px 14px 14px;}
+.fu-row.open .fu-body{display:block;}
+.fu-tabs{display:inline-flex;background:#E5E7EB;border-radius:9px;padding:3px;margin-bottom:10px;}
+.fu-tab{border:0;background:transparent;font-family:inherit;font-size:12px;font-weight:600;color:var(--sub);padding:5px 12px;border-radius:7px;cursor:pointer;}
+.fu-tab.on{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.12);}
+.fu-list{display:none;flex-wrap:wrap;gap:6px;}
+.fu-list.on{display:flex;}
+.fu-chip{font-size:12px;padding:4px 10px;border-radius:99px;border:1px solid;}
+.fu-chip.todo{background:#FEF2F2;border-color:#FECACA;color:#B91C1C;}
+.fu-chip.done{background:#ECFDF5;border-color:#A7F3D0;color:#047857;}
+.fu-chip small{opacity:.75;margin-left:5px;font-size:10px;}
+.fu-empty{font-size:12px;color:var(--sub);padding:4px 0;}
+
 .card-title { font-family:'Prompt',sans-serif; font-size:13px; font-weight:600; color:var(--sub); margin-bottom:14px; display:flex; align-items:center; gap:7px; }
 .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
 .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px; }
@@ -4016,7 +4044,7 @@ async function loadOverview(forceYear) {
   if (!overviewAllRisk.length) {
     el.innerHTML = '<div class="loading"><span class="spinner"></span>กำลังโหลด...</div>';
     const [{ data: riskAll }, { data: emps }, { data: trendData }] = await Promise.all([
-      sb.from('risk_checkup').select('id,emp_id,checkup_year,bp_systolic,bp_diastolic,hearing_result,fvc,ekg_risk_result,chemical_result,overall_result,employees(full_name,department,emp_id)').order('checkup_year',{ascending:false}).limit(1000),
+      sb.from('risk_checkup').select('id,emp_id,checkup_year,checkup_date,bp_systolic,bp_diastolic,hearing_result,fvc,ekg_risk_result,chemical_result,overall_result,employees(full_name,department,emp_id)').order('checkup_year',{ascending:false}).limit(1000),
       sb.from('employees').select('emp_id,full_name,department,role,risk_required').eq('role','employee').eq('risk_required',true),
       sb.from('risk_checkup').select('checkup_year,overall_result,hearing_result,fvc,ekg_risk_result').order('checkup_year').limit(1000)
     ]);
@@ -4039,6 +4067,8 @@ async function loadOverview(forceYear) {
 
   const checkedThisYear = r.filter(x=>x.checkup_year===useYear);
   const checkedEmpIds = new Set(checkedThisYear.map(x=>x.emp_id));
+  const dateByEmp = {};
+  checkedThisYear.forEach(x=>{ dateByEmp[x.emp_id] = x.checkup_date || null; });
   const notChecked = empList.filter(e=>!checkedEmpIds.has(e.emp_id));
   const abnormal = checkedThisYear.filter(x=>x.overall_result && x.overall_result!=='ปกติ');
   const passCount = checkedThisYear.filter(x=>x.overall_result==='ปกติ').length;
@@ -4162,34 +4192,66 @@ async function loadOverview(forceYear) {
     })() +
 
     // === แผนกที่ยังต้องติดตาม (อันดับ 4 — ล่างสุด) ===
-    (alertDepts.length > 0 ?
-    '<div class="card" style="border-top:3px solid #D97706;">' +
-    '<div class="card-title" style="color:#92400E;">🚨 แผนกที่ยังต้องติดตาม</div>' +
-    '<div style="font-size:11px;color:var(--sub);margin-bottom:10px;">' + alertDepts.reduce((a,[,v])=>a+(v.total-v.checked),0) + ' คนยังไม่เข้ารับการตรวจ</div>' +
-    '<div style="display:flex;flex-direction:column;gap:8px;">' +
-    alertDepts.map(([dept,v]) => {
-      const remain = v.total - v.checked;
-      const p = Math.round(v.checked / v.total * 100);
-      const col = p >= 80 ? '#D97706' : '#DC2626';
-      const names = empList.filter(e => e.department === dept && !checkedEmpIds.has(e.emp_id)).map(e => e.full_name || e.emp_id);
-      const nameListHtml = names.map(n => '<div style="padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;">' + n + '</div>').join('');
-      const cardId = 'expand-' + dept.replace(/[^a-zA-Z0-9]/g, '_');
-      const toggleFn = "var el=document.getElementById('" + cardId + "');el.style.display=el.style.display=='none'?'block':'none';this.textContent=el.style.display=='none'?'▼ ดูรายชื่อ':'▲ ซ่อน'";
-      return '<div style="background:var(--bg);border-radius:10px;padding:10px 12px;border-left:3px solid ' + col + ';">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
-        '<span style="font-size:12px;font-weight:700;">' + dept + '</span>' +
-        '<span style="font-size:18px;font-weight:800;color:' + col + ';">' + remain + ' คน</span>' +
-        '</div>' +
-        '<div style="font-size:11px;color:var(--sub);margin-bottom:6px;">ตรวจแล้ว ' + v.checked + '/' + v.total + ' (' + p + '%)</div>' +
-        '<button onclick="' + toggleFn + '" style="font-size:11px;padding:3px 10px;border:1px solid ' + col + ';border-radius:6px;background:transparent;color:' + col + ';cursor:pointer;font-family:inherit;">▼ ดูรายชื่อ</button>' +
-        '<div id="' + cardId + '" style="display:none;margin-top:6px;">' + nameListHtml + '</div>' +
-        '</div>';
-    }).join('') +
-    '</div></div>' :
-    '<div class="card" style="border-top:3px solid #059669;">' +
-    '<div style="color:#059669;font-size:14px;padding:20px 0;text-align:center;">✅ พนักงานทุกคนในทุกแผนก<br>เข้ารับการตรวจครบแล้ว!</div>' +
-    '</div>') +
+    ovRenderFollowup(alertDepts, empList, checkedEmpIds, dateByEmp) +
     '</div>';
+}
+
+// ===== FOLLOW-UP CARD (overview) =====
+function ovEsc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fuToggle(i) {
+  const row = document.getElementById('fu-row-' + i);
+  if (row) row.classList.toggle('open');
+}
+function fuTab(i, which) {
+  const row = document.getElementById('fu-row-' + i);
+  if (!row) return;
+  row.querySelectorAll('.fu-tab').forEach(t => t.classList.toggle('on', t.dataset.t === which));
+  row.querySelectorAll('.fu-list').forEach(l => l.classList.toggle('on', l.dataset.t === which));
+}
+function ovRenderFollowup(alertDepts, empList, checkedEmpIds, dateByEmp) {
+  if (!alertDepts.length) {
+    return '<div class="card" style="border-top:3px solid #059669;">' +
+      '<div style="color:#059669;font-size:14px;padding:20px 0;text-align:center;">✅ พนักงานทุกคนในทุกแผนก<br>เข้ารับการตรวจครบแล้ว!</div></div>';
+  }
+  const totalRemain = alertDepts.reduce((a,[,v]) => a + (v.total - v.checked), 0);
+  const byName = (a, b) => a.name.localeCompare(b.name, 'th');
+  const rows = alertDepts.map(([dept, v], i) => {
+    const remain = v.total - v.checked;
+    const p = v.total ? Math.round(v.checked / v.total * 100) : 0;
+    const col = p < 50 ? '#DC2626' : (p < 80 ? '#EA580C' : '#D97706');
+    const deptEmps = empList.filter(e => e.department === dept);
+    const todo = deptEmps.filter(e => !checkedEmpIds.has(e.emp_id)).map(e => ({name: e.full_name || e.emp_id})).sort(byName);
+    const done = deptEmps.filter(e => checkedEmpIds.has(e.emp_id)).map(e => ({name: e.full_name || e.emp_id, date: dateByEmp[e.emp_id]})).sort(byName);
+    const todoHtml = todo.map(x => '<span class="fu-chip todo">' + ovEsc(x.name) + '</span>').join('');
+    const doneHtml = done.length
+      ? done.map(x => '<span class="fu-chip done">✓ ' + ovEsc(x.name) + (x.date ? '<small>' + ovEsc(dateTH(x.date)) + '</small>' : '') + '</span>').join('')
+      : '<div class="fu-empty">ยังไม่มีผู้เข้ารับการตรวจ</div>';
+    return '<div class="fu-row' + (i === 0 ? ' open' : '') + '" id="fu-row-' + i + '" style="--c:' + col + ';">' +
+      '<div class="fu-head" onclick="fuToggle(' + i + ')">' +
+        '<div class="fu-main">' +
+          '<div class="fu-name">' + ovEsc(dept) + '</div>' +
+          '<div class="fu-bar"><div class="fu-fill" style="width:' + p + '%;"></div></div>' +
+          '<div class="fu-meta">ตรวจแล้ว ' + v.checked + '/' + v.total + ' คน · ' + p + '%</div>' +
+        '</div>' +
+        '<div class="fu-num"><b>' + remain + '</b><span>ยังไม่ตรวจ</span></div>' +
+        '<div class="fu-chev">▼</div>' +
+      '</div>' +
+      '<div class="fu-body">' +
+        '<div class="fu-tabs">' +
+          '<button class="fu-tab on" data-t="todo" onclick="fuTab(' + i + ',\'todo\')">ยังไม่ตรวจ ' + todo.length + '</button>' +
+          '<button class="fu-tab" data-t="done" onclick="fuTab(' + i + ',\'done\')">ตรวจแล้ว ' + done.length + '</button>' +
+        '</div>' +
+        '<div class="fu-list on" data-t="todo">' + todoHtml + '</div>' +
+        '<div class="fu-list" data-t="done">' + doneHtml + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+  return '<div class="card" style="border-top:3px solid #D97706;">' +
+    '<div class="card-title" style="color:#92400E;">🚨 แผนกที่ยังต้องติดตาม</div>' +
+    '<div style="font-size:12px;color:var(--sub);margin-bottom:12px;">เหลือ <b style="color:#DC2626;">' + totalRemain + ' คน</b> ใน ' + alertDepts.length + ' แผนก · แตะที่แผนกเพื่อดูรายชื่อ</div>' +
+    '<div class="fu-list-wrap">' + rows + '</div></div>';
 }
 
 // ===== HELPERS =====
