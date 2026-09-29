@@ -1890,7 +1890,7 @@ function scoreLabel(s) {
 // ===== DASHBOARD =====
 async function loadDashboard() {
   const el = document.getElementById('dash-content');
-  el.innerHTML = '<div class="loading"><span class="spinner"></span>กำลังโหลข้อมูล...</div>';
+  el.innerHTML = '<div class="loading"><span class="spinner"></span>กำลังโหลดข้อมูล...</div>';
   try {
     if (!sb) throw new Error('ยังไม่ได้ตั้งค่า Supabase');
     const { data } = await sb.from('annual_checkup').select('*').eq('emp_id', currentUser.emp_id).order('checkup_year', { ascending: false });
@@ -2271,7 +2271,11 @@ function drawKidneyChart() {
 // ===== RESULTS PAGE =====
 async function loadResults() {
   if (!annualData.length) await loadDashboard();
-  if (!annualData.length) return;
+  if (!annualData.length) {
+    document.getElementById('res-ytabs').innerHTML = '';
+    document.getElementById('res-content').innerHTML = `<div class="empty"><div class="empty-ico">📋</div><h3>ยังไม่มีข้อมูลผลตรวจ</h3><p style="margin:8px 0 20px">กรุณาลงข้อมูลผลตรวจสุขภาพก่อนนะครับ</p><button class="btn-primary" onclick="goto('enter-annual')">✏️ ลงข้อมูลเลย</button></div>`;
+    return;
+  }
   const ytabs = document.getElementById('res-ytabs');
   ytabs.innerHTML = annualData.map((r, i) => `<div class="ytab ${i===0?'active':''}" onclick="renderResultTable(${r.checkup_year},this)">${r.checkup_year}</div>`).join('');
   renderResultTable(annualData[0].checkup_year, null);
