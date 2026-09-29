@@ -3615,33 +3615,9 @@ async function loadAdmin() {
     </div>`;
 
     } else if (adminTab === 'settings') {
-    const savedSbUrl = localStorage.getItem('sb_url') || '';
-    const savedSbKey = localStorage.getItem('sb_key') || '';
     const savedAiKey = localStorage.getItem('ai_key') || '';
     el.innerHTML = `
-    <div class="grid-2" style="gap:18px;margin-bottom:18px;">
-
-      <!-- Supabase Card -->
-      <div class="card" style="border-top:3px solid #059669;">
-        <div class="card-title" style="color:#065F46;">🗄️ Supabase Database</div>
-        <div style="font-size:12px;color:var(--sub);margin-bottom:16px;">การเชื่อมต่อฐานข้อมูลสำหรับเก็บผลตรวจสุขภาพ</div>
-        <div class="fg" style="margin-bottom:12px;">
-          <label class="fl">Project URL</label>
-          <input class="fi" type="text" id="cfg-sb-url" value="${savedSbUrl}" placeholder="https://xxxx.supabase.co">
-        </div>
-        <div class="fg" style="margin-bottom:16px;">
-          <label class="fl">Anon Key</label>
-          <div style="position:relative;">
-            <input class="fi" type="password" id="cfg-sb-key" value="${savedSbKey}" placeholder="eyJhbGciOiJ..." style="padding-right:44px;">
-            <button onclick="toggleCfgVis('cfg-sb-key',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;color:var(--sub);">👁</button>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn-primary" onclick="saveSystemSettings()" style="flex:1;">💾 บันทึก</button>
-          <button class="btn-sec" onclick="testSbConn()" style="flex:1;">🔌 ทดสอบ</button>
-        </div>
-        <div id="sb-conn-result" style="margin-top:10px;font-size:12px;min-height:18px;"></div>
-      </div>
+    <div style="max-width:640px;margin-bottom:18px;">
 
       <!-- AI API Card -->
       <div class="card" style="border-top:3px solid #8F0575;">
@@ -3655,22 +3631,21 @@ async function loadAdmin() {
           </div>
         </div>
         <div style="background:#FDF0FB;border-radius:9px;padding:10px 12px;margin-bottom:14px;font-size:11.5px;color:#5B21B6;line-height:1.7;">
-          🔒 Key เก็บใน <strong>localStorage ของ browser</strong> เครื่องนี้เท่านั้น<br>
-          👑 เข้าถึงได้เฉพาะ <strong>Admin</strong> ผ่าน Role-based Access Control<br>
-          🚫 ไม่ได้ฝังใน Source Code ไม่ส่งออกไปที่อื่น
+          💾 Key ถูกบันทึกลงฐานข้อมูล (ตาราง system_settings) และ localStorage ของเครื่องนี้<br>
+          🌐 ผู้ใช้ที่กดประเมินด้วย AI จะดึง Key ไปใช้ในเบราว์เซอร์ของตัวเอง<br>
+          ⚠️ ควรตั้ง spend limit ที่ Anthropic Console เพื่อจำกัดความเสียหายหาก Key รั่วไหล
         </div>
         <button class="btn-primary" onclick="saveSystemSettings()" style="width:100%;">💾 บันทึกการตั้งค่า</button>
       </div>
     </div>
 
     <!-- Status Card -->
-    <div class="card" style="border-top:3px solid #0284C7;">
+    <div class="card" style="border-top:3px solid #0284C7;max-width:640px;">
       <div class="card-title" style="color:#0C4A6E;">📊 สถานะการตั้งค่าปัจจุบัน</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px;">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:4px;">
         ${[
-          ['🗄️','Supabase URL', savedSbUrl ? '✅ ตั้งค่าแล้ว' : '❌ ยังไม่ได้ตั้งค่า', savedSbUrl ? '#059669' : '#DC2626'],
-          ['🔑','Supabase Key', savedSbKey ? '✅ ตั้งค่าแล้ว' : '❌ ยังไม่ได้ตั้งค่า', savedSbKey ? '#059669' : '#DC2626'],
-          ['🤖','AI API Key',   savedAiKey ? '✅ ตั้งค่าแล้ว' : '❌ ยังไม่ได้ตั้งค่า', savedAiKey ? '#059669' : '#DC2626'],
+          ['🗄️','ฐานข้อมูล Supabase', '✅ กำหนดไว้ในระบบแล้ว', '#059669'],
+          ['🤖','AI API Key (เครื่องนี้)', savedAiKey ? '✅ ตั้งค่าแล้ว' : '❌ ยังไม่ได้ตั้งค่า', savedAiKey ? '#059669' : '#DC2626'],
         ].map(([ic,t,s,c])=>
           '<div style="padding:14px;background:var(--bg);border-radius:10px;text-align:center;">' +
           '<div style="font-size:22px;margin-bottom:6px;">' + ic + '</div>' +
@@ -3678,6 +3653,10 @@ async function loadAdmin() {
           '<div style="font-size:12px;font-weight:600;color:' + c + ';">' + s + '</div>' +
           '</div>'
         ).join('')}
+      </div>
+      <div style="margin-top:14px;display:flex;align-items:center;gap:12px;">
+        <button class="btn-sec" onclick="testSbConn()" style="padding:8px 16px;">🔌 ทดสอบการเชื่อมต่อฐานข้อมูล</button>
+        <div id="sb-conn-result" style="font-size:12px;min-height:18px;"></div>
       </div>
     </div>`;
 
